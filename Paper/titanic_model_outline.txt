@@ -1,0 +1,32 @@
+Predictors
+pclass, title (extracted from name, then grouped), sex, age, age**2 (diminishing returns?), 
+sibsp, parch, family ID (grouped by unique ticket #s), fare, and embarked. Don't include 
+a dummy for presence of body number since it is correlated with survived only 
+because it occurs post-mortem and thus has nothing to do with the actual probability 
+of survival. Maybe use first letter of cabin and bin missing values using the average cabin 
+level of the passenger class.
+
+Use family ID to control for within-family variation~
+
+
+Imputation
+How to impute missing values for Age (as a continuous variable) using the ENTIRE data
+Either:
+1). use -mice- package (see 'methods'), or
+2). use caret's predict(preProcess = "knnImpute"/"bagImpute")*, or 
+3). apply lambda: conditional median estimator, or
+4). allow xgboost to handle NAs? (probably not, there are way too many NAs...)
+Then generate Age**2
+
+
+Model
+Using R's -caret- (using factors for categorical predictors except for "xgboost").
+Either use:
+1). Logistic Regression "glm" (including additional interaction term between
+age and sex), or
+--
+2). Random Forest "ranger"/"rf" (which already models interactions between predictors), or
+--
+3). (Stochastic) Gradient Boosted Trees "gbm", or
+4). Regularized Gradient Boosting "xgboost"* (see References)
+
